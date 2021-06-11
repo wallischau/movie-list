@@ -1,0 +1,19 @@
+{
+  "name": "top-movies-api",
+  "version": "1.0.1",
+  "description": "Get the top movies per year.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "update-movies": "node scripts/downloadMovieData.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "hansel.lopez@nagrastar.com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "axios": "^0.19.2"
+  }
+}
