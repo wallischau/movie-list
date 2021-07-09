@@ -1,0 +1,25 @@
+.author {
+	text-align: right;
+	color: white;
+}
+
+.jumbotron {
+	padding-top: 25px;
+	padding-bottom: 25px;
+	height: 260px !important;
+}
+
+.text-center {
+	text-align:center;
+}
+
+.number-row {
+	height: 50%;
+}
+
+.number-cell {
+	/*border: 5px solid green;*/
+	margin-top: 20px;
+	margin-left: 5px;
+}
+
