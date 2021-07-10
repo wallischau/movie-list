@@ -29,13 +29,11 @@ export const List = (props) => {
   // const activeList = data.activeList;
   const curListIdx = props.curListIdx;
 
-  // const movieListInRange = getMoviesInsideRange(movieGroup, displayStartIdx[curListIdx], displayEndIdx[curListIdx]);
   const movieListInRange = getMoviesInsideRange(movieGroup, displayIdx[curListIdx]);
   console.log('3003 movieListInRange', movieListInRange);
   const itemShown = movieListInRange.map((movie, idx) => (
 
     <Col size="sm-3">
-      {/* <input onKeyDown = { this.handlerKeyPress } /> */}
       <ListItem key={movie.imdbID} item={movie} src={movie.Poster} active={idx === cursor && curListIdx === activeListIdx}>
       </ListItem>
     </Col>
@@ -43,7 +41,6 @@ export const List = (props) => {
   return (
     <div className="list-overflow-container">
       <ul className="list-group">
-        {/* {children} */}
         {itemShown}
       </ul>
     </div>

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useRef } from "react";
 // import DeleteBtn from "../../components/DeleteBtn";
 import Jumbotron from "./Jumbotron";
 import { Link } from "react-router-dom";
@@ -16,12 +16,9 @@ class Movies extends Component {
     this.state = {
       movies: [],
       cursor: 0, // current horizontal movie position on screen at the moment
-      activeListIdx: 0,  //vertical
-      displayIdx: [[0,3], [0,3], [0,3]],  //display range for each group, # of entries matches # of group
-      // displayStartIdx: [0, 0],
-      // displayEndIdx: [3, 3],
-      // movieListLengths: [ 0, 0 ],
-      movieGroups: [ ]
+      activeListIdx: 0,  // index of active group (displayed vertically)
+      displayIdx: [],  //display range for each group, # of entries matches # of group
+      movieGroups: [ ] //list of movie groups
 
     };
   };
@@ -41,48 +38,30 @@ class Movies extends Component {
     API.getMovies()
       .then(res => {
         const movieGroups = [];
-        // const top2019Movies = this.getTopMovies(res.data, '2019');
-        movieGroups.push(this.getTopMovies(res.data, '2019'));
-        movieGroups.push(this.getTopMovies(res.data, '2018'));
-        // const top2018Movies = this.getTopMovies(res.data, '2018');
-        movieGroups.push(this.getMisteryMovies(res.data));
-        // const mysteryMovies = this.getMisteryMovies(res.data);
+        const displayIdx = [];
+        movieGroups.push(this.getTopMoviesByYear(res.data, '2019'));
+        displayIdx.push([0,3]);
+        movieGroups.push(this.getTopMoviesByYear(res.data, '2018'));
+        displayIdx.push([0,3]);
+        movieGroups.push(this.getTopMoviesByGenre(res.data, 'Mystery'));
+        displayIdx.push([0,3]);
+        movieGroups.push(this.getTopMoviesByGenre(res.data, 'Action'));
+        displayIdx.push([0,3]);
+        movieGroups.push(this.getTopMoviesByGenre(res.data, 'Fantasy'));
+        displayIdx.push([0,3]);
+        movieGroups.push(this.getTopMoviesByGenre(res.data, 'Thriller'));
+        displayIdx.push([0,3]);
 
         return (
           this.setState({
             movies: res.data,
             movieGroups: movieGroups,
-            // movieListLengths: [top2019Movies.length, top2018Movies.length]
+            displayIdx: displayIdx
           }))
       })
       .catch(err => console.log(err));
   };
 
-  // deleteBook = id => {
-  //   API.deleteBook(id)
-  //     .then(res => this.loadBooks())
-  //     .catch(err => console.log(err));
-  // };
-
-  // handleInputChange = event => {
-  //   const { name, value } = event.target;
-  //   this.setState({
-  //     [name]: value
-  //   });
-  // };
-
-  // handleFormSubmit = event => {
-  //   event.preventDefault();
-  //   if (this.state.title && this.state.author) {
-  //     API.saveBook({
-  //       title: this.state.title,
-  //       author: this.state.author,
-  //       synopsis: this.state.synopsis
-  //     })
-  //       .then(res => this.loadBooks())
-  //       .catch(err => console.log(err));
-  //   }(
-  // };
 
   handleMoviesClick = id => {
     this.setState({
@@ -147,12 +126,12 @@ class Movies extends Component {
     console.log('1005 post cur and list', this.state.cursor, this.state.activeListIdx);
   };
 
-  getTopMovies = ((movies, year) => {
+  getTopMoviesByYear = ((movies, year) => {
     return movies.filter(movie => parseFloat(movie.imdbRating) > 8.0 && movie.Year === year);
   });
 
-  getMisteryMovies = ((movies) => {
-    return movies.filter(movie => movie.Genre.includes('Mystery'));
+  getTopMoviesByGenre = ((movies, genre) => {
+    return movies.filter(movie => movie.Genre.includes(genre) && parseFloat(movie.imdbRating) > 8.0 );
   });
 
   getMoviesInRange = (movieList, start, end) => {
@@ -164,9 +143,6 @@ class Movies extends Component {
     const { movieGroups } = this.state;
     const rowOfMovies = [];
 
-    // group title
-    //group index
-    //current list index
     const movieRowMetas = [
       {
         title: 'Top 2019 Movies',
@@ -179,6 +155,18 @@ class Movies extends Component {
       {
         title: 'Mystery Movies',
         groupIdx: 2,
+      },
+      {
+        title: 'Action Movies',
+        groupIdx: 3,
+      },
+      {
+        title: 'Fantasy Movies',
+        groupIdx: 4,
+      },
+      {
+        title: 'Thriller Movies',
+        groupIdx: 5,
       },
     ];
 
