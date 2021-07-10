@@ -3,8 +3,10 @@ import "./List.css";
 import { Col, Row, Container } from "../Grid";
 import { ListItem } from "./ListItem";
 
-const getMoviesInsideRange = (movieList, start, end) => {
-  let temp = []
+const getMoviesInsideRange = (movieList, range) => {
+  let temp = [];
+  let start = range[0];
+  let end = range[1];
   if (start < end) {
   //e.g. 0,3 => 0,1,2,3
     return movieList.slice(start, end+1);
@@ -20,14 +22,15 @@ const getMoviesInsideRange = (movieList, start, end) => {
 
 export const List = (props) => {
   const movieGroup = props.movieGroup;
-  const {cursor, activeListIdx, displayStartIdx, displayEndIdx } = props.data;
+  const {cursor, activeListIdx, displayStartIdx, displayEndIdx, displayIdx } = props.data;
   console.log('3001 items', movieGroup);
-  console.log('3002', displayStartIdx, displayEndIdx);
+  console.log('3002', displayIdx);
   // const cursor = data.cursor;
   // const activeList = data.activeList;
   const curListIdx = props.curListIdx;
 
-  const movieListInRange = getMoviesInsideRange(movieGroup, displayStartIdx[curListIdx], displayEndIdx[curListIdx]);
+  // const movieListInRange = getMoviesInsideRange(movieGroup, displayStartIdx[curListIdx], displayEndIdx[curListIdx]);
+  const movieListInRange = getMoviesInsideRange(movieGroup, displayIdx[curListIdx]);
   console.log('3003 movieListInRange', movieListInRange);
   const itemShown = movieListInRange.map((movie, idx) => (
 

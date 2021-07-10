@@ -17,14 +17,12 @@ class Movies extends Component {
       movies: [],
       cursor: 0, // current horizontal movie position on screen at the moment
       activeListIdx: 0,  //vertical
-      displayStartIdx: [ 0, 0 ],
-      displayEndIdx: [ 3, 3 ],
-      movieListLengths: [ 0, 0 ],
-      movieGroups: [
-        [],
-        []
-      ]
-      
+      displayIdx: [[0,3], [0,3], [0,3]],  //display range for each group, # of entries matches # of group
+      // displayStartIdx: [0, 0],
+      // displayEndIdx: [3, 3],
+      // movieListLengths: [ 0, 0 ],
+      movieGroups: [ ]
+
     };
   };
 
@@ -42,15 +40,20 @@ class Movies extends Component {
   loadMovies = () => {
     API.getMovies()
       .then(res => {
-        const top2019Movies = this.getTopMovies(res.data, '2019');
-        const top2018Movies = this.getTopMovies(res.data, '2018');
+        const movieGroups = [];
+        // const top2019Movies = this.getTopMovies(res.data, '2019');
+        movieGroups.push(this.getTopMovies(res.data, '2019'));
+        movieGroups.push(this.getTopMovies(res.data, '2018'));
+        // const top2018Movies = this.getTopMovies(res.data, '2018');
+        movieGroups.push(this.getMisteryMovies(res.data));
+        // const mysteryMovies = this.getMisteryMovies(res.data);
 
         return (
-            this.setState({ 
-          movies: res.data, 
-          movieGroups: [ top2019Movies, top2018Movies ],
-          movieListLengths: [top2019Movies.length, top2018Movies.length]
-        }))
+          this.setState({
+            movies: res.data,
+            movieGroups: movieGroups,
+            // movieListLengths: [top2019Movies.length, top2018Movies.length]
+          }))
       })
       .catch(err => console.log(err));
   };
@@ -79,11 +82,11 @@ class Movies extends Component {
   //       .then(res => this.loadBooks())
   //       .catch(err => console.log(err));
   //   }(
-    // };
-  
+  // };
+
   handleMoviesClick = id => {
     this.setState({
-      currentMoviesId: id 
+      currentMoviesId: id
     });
     console.log("id=", id);
   };
@@ -91,58 +94,53 @@ class Movies extends Component {
   handlerKeyPress = (e) => {
     // changing the state to the name of the key
     // which is pressed
-    const { cursor, activeListIdx, displayStartIdx, displayEndIdx } = this.state;
+    const { cursor, activeListIdx, displayIdx } = this.state;
     // console.log('1003', e.key);
     // console.log('1004 currentcur', cursor);
     // console.log('1005 currentlistidx', activeListIdx);
     // console.log('1006 display Idx', displayStartIdx, displayEndIdx);
     const curMovieList = this.state.movieGroups[activeListIdx];
     console.log('1007 curmovielist', curMovieList);
-    if (e.keyCode === 37) {
+    if (e.keyCode === 37) {     //left arrow key
       if (cursor > 0) {
-        this.setState( prevState => ({
+        this.setState(prevState => ({
           cursor: prevState.cursor - 1
         }));
       }
       else {
-        this.setState( prevState => {
-          prevState.displayStartIdx[activeListIdx] = (prevState.displayStartIdx[activeListIdx] - 1 + curMovieList.length) % curMovieList.length;
-          prevState.displayEndIdx[activeListIdx] = (prevState.displayEndIdx[activeListIdx] - 1 + curMovieList.length) % curMovieList.length;
+        this.setState(prevState => {
+          prevState.displayIdx[activeListIdx][0] = (prevState.displayIdx[activeListIdx][0] - 1 + curMovieList.length) % curMovieList.length;
+          prevState.displayIdx[activeListIdx][1] = (prevState.displayIdx[activeListIdx][1] - 1 + curMovieList.length) % curMovieList.length;
           return {
-          displayStartIdx: prevState.displayStartIdx,
-          displayEndIdx: prevState.displayEndIdx
+            displayIdx: prevState.displayIdx,
           }
         });
-
-
       }
-
-
-
-    } else if (e.keyCode === 39 && cursor < curMovieList.length - 1) {
+    } else if (e.keyCode === 39 && cursor < curMovieList.length - 1) { //right arrow key
+      console.log('4001 right key', this.state.displayIdx[2]);
       //shift right...
       if (cursor < 3) {
-        this.setState( prevState => ({
+        this.setState(prevState => ({
           cursor: prevState.cursor + 1
         }));
       }
       //cursor at edge of display
       else {
-        this.setState( prevState => {
-          prevState.displayStartIdx[activeListIdx] = (prevState.displayStartIdx[activeListIdx] + 1) % curMovieList.length;
-          prevState.displayEndIdx[activeListIdx] = (prevState.displayEndIdx[activeListIdx] + 1) % curMovieList.length;
+        this.setState(prevState => {
+          prevState.displayIdx[activeListIdx][0] = (prevState.displayIdx[activeListIdx][0] + 1) % curMovieList.length;
+          prevState.displayIdx[activeListIdx][1] = (prevState.displayIdx[activeListIdx][1] + 1) % curMovieList.length;
           return {
-          displayStartIdx: prevState.displayStartIdx,
-          displayEndIdx: prevState.displayEndIdx
+            displayIdx: prevState.displayIdx,
           }
         });
       }
-    } else if (e.keyCode === 38 && activeListIdx > 0) {
-      this.setState( prevState => ({
+    } else if (e.keyCode === 38 && activeListIdx > 0) { //up arrow key
+      this.setState(prevState => ({
         activeListIdx: prevState.activeListIdx - 1
       }));
-    } else if (e.keyCode === 40 && activeListIdx < 1) {
-      this.setState( prevState => ({
+    } else if (e.keyCode === 40 && activeListIdx < displayIdx.length - 1) {  //down arrow key
+      console.log('4002 displayidx len', activeListIdx, displayIdx);
+      this.setState(prevState => ({
         activeListIdx: prevState.activeListIdx + 1
       }));
     }
@@ -153,15 +151,65 @@ class Movies extends Component {
     return movies.filter(movie => parseFloat(movie.imdbRating) > 8.0 && movie.Year === year);
   });
 
+  getMisteryMovies = ((movies) => {
+    return movies.filter(movie => movie.Genre.includes('Mystery'));
+  });
+
   getMoviesInRange = (movieList, start, end) => {
-    return movieList.slice(start, end+1);
+    return movieList.slice(start, end + 1);
   };
 
 
   render() {
     const { movieGroups } = this.state;
+    const rowOfMovies = [];
+
+    // group title
+    //group index
+    //current list index
+    const movieRowMetas = [
+      {
+        title: 'Top 2019 Movies',
+        groupIdx: 0,
+      },
+      {
+        title: 'Top 2018 Movies',
+        groupIdx: 1,
+      },
+      {
+        title: 'Mystery Movies',
+        groupIdx: 2,
+      },
+    ];
+
+    movieRowMetas.forEach(row => {
+      if (movieGroups[row.groupIdx]) {
+
+        rowOfMovies.push(
+          <div>
+            <Row>
+              {/* <Col size="md-4"> */}
+              {/* <MoviesDetail currentMoviesId={this.state.currentMoviesId}/> */}
+              {/* </Col> */}
+              <Col size="md-12">
+                <h3 className='text-center'>{row.title}</h3>
+              </Col>
+            </Row>
+            <Row>
+              {this.state.movies.length ? (
+                <List data={this.state} movieGroup={movieGroups[row.groupIdx]} curListIdx={row.groupIdx}>
+                </List>
+              ) : (
+                <h3>No Results to Display</h3>
+              )}
+
+            </Row>
+          </div>
+        );
+      }
+    });
     return (
-      <Container fluid onKeyDown={ this.handlerKeyPress }>
+      <Container fluid onKeyDown={this.handlerKeyPress}>
         <Row>
           <Col size="md-12">
             <Jumbotron>
@@ -169,40 +217,7 @@ class Movies extends Component {
             </Jumbotron>
           </Col>
         </Row>
-        <Row>
-          {/* <Col size="md-4"> */}
-            {/* <MoviesDetail currentMoviesId={this.state.currentMoviesId}/> */}
-          {/* </Col> */}
-          <Col size="md-12">
-              <h3 className='text-center'>Top 2019 Movies</h3>
-          </Col>
-        </Row>
-        <Row>
-            {this.state.movies.length ? (
-              <List data={this.state} movieGroup={movieGroups[0]} curListIdx={0}>
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
-
-        </Row>
-        <Row>
-          {/* <Col size="md-4"> */}
-            {/* <MoviesDetail currentMoviesId={this.state.currentMoviesId}/> */}
-          {/* </Col> */}
-          <Col size="md-12">
-              <h3 className='text-center'>Top 2018 Movies </h3>
-          </Col>
-        </Row>
-        <Row>
-            {this.state.movies.length ? (
-              <List data={this.state} movieGroup={movieGroups[1]} curListIdx={1}>
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
-
-        </Row>
+        {rowOfMovies}
       </Container>
     );
   }

@@ -21,7 +21,7 @@
   }
   
   .list-overflow-container li a {
-    color: #2A878C;
+    color: #e6ebec;
   }
   
   .list-overflow-container li:first-child {
@@ -33,5 +33,5 @@
   }
 
   .active {
-      border: 3px solid deeppink;
+      border: 3px solid rgb(255, 20, 20);
   }

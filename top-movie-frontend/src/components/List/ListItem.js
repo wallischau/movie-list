@@ -6,12 +6,12 @@ export const ListItem = props => {
   
   return ( 
 
-  <li className="list-group-item active">
+  <li className="list-group-item ">
     {/* {props.children} */}
     <div to={"/movies/" + props.item.imdbID}>
           {/* <div onClick={() => this.handleMoviesClick(movie.imdbID)}> */}
           <strong> 
-            Movies # {props.item.imdbID}<img  className={ props.active ? 'active': '' } src={props.item ? props.item.Poster: ''} alt={props.item.Poster}/>
+            <img  className={ props.active ? 'active': '' } src={props.item ? props.item.Poster: ''} alt={props.item.Poster}/>
           </strong>
           {/* </div> */}
         </div>
