@@ -22,18 +22,18 @@ const getMoviesInsideRange = (movieList, range) => {
 
 export const List = (props) => {
   const movieGroup = props.movieGroup;
-  const {cursor, activeListIdx, displayStartIdx, displayEndIdx, displayIdx } = props.data;
+  const {cursor, activeListIdx, movieGroups } = props.data;
   console.log('3001 items', movieGroup);
-  console.log('3002', displayIdx);
+  console.log('3002', movieGroups);
   // const cursor = data.cursor;
   // const activeList = data.activeList;
   const curListIdx = props.curListIdx;
 
-  const movieListInRange = getMoviesInsideRange(movieGroup, displayIdx[curListIdx]);
+  const movieListInRange = getMoviesInsideRange(movieGroup, movieGroups[activeListIdx].displayRangeIndices);
   console.log('3003 movieListInRange', movieListInRange);
   const itemShown = movieListInRange.map((movie, idx) => (
 
-    <Col size="sm-3">
+    <Col key={idx} size="sm-3">
       <ListItem key={movie.imdbID} item={movie} src={movie.Poster} active={idx === cursor && curListIdx === activeListIdx}>
       </ListItem>
     </Col>

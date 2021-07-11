@@ -6,7 +6,7 @@ export const ListItem = props => {
   
   return ( 
 
-  <li className="list-group-item ">
+  <li key={props.item.imdbID} className="list-group-item ">
     {/* {props.children} */}
     <div to={"/movies/" + props.item.imdbID}>
           {/* <div onClick={() => this.handleMoviesClick(movie.imdbID)}> */}
