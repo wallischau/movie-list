@@ -1,22 +1,14 @@
 import React from "react";
 
+/* Description: listItem component to display movie entry */
 export const ListItem = props => {
+  return (
+    <li key={props.item.imdbID} className="list-group-item ">
+      <div to={"/movies/" + props.item.imdbID}>
+        <img className={props.active ? 'active' : ''} src={props.item ? props.item.Poster : ''} alt={props.item.Poster} />
+      </div>
 
-  // console.log('2002 props', props);
-  
-  return ( 
-
-  <li key={props.item.imdbID} className="list-group-item ">
-    {/* {props.children} */}
-    <div to={"/movies/" + props.item.imdbID}>
-          {/* <div onClick={() => this.handleMoviesClick(movie.imdbID)}> */}
-          <strong> 
-            <img  className={ props.active ? 'active': '' } src={props.item ? props.item.Poster: ''} alt={props.item.Poster}/>
-          </strong>
-          {/* </div> */}
-        </div>
-
-  </li>
+    </li>
   )
-  
+
 }
