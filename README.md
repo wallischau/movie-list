@@ -57,3 +57,15 @@ The requirements are broken down into feature levels. You are only required to c
 ### Feature 3 - Favorite Shelf
 * Display a shelf with only movies that the user has favorited
 * The shelf should only exist if the user has favorite movies
+
+---------------------------------------------------
+## Front End 
+### Instruction
+* Copy the folder `top-movie-frontend` folder to the same level of `top-movie-api`
+* In `top-movie-frontend`   
+    * Run `npm install`
+    * Run `npm start`
+* This should open the movie page in browser via port 3000
+### Coverage
+* MVP
+* Feature 1
