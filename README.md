@@ -61,7 +61,7 @@ The requirements are broken down into feature levels. You are only required to c
 ---------------------------------------------------
 ## Front End 
 ### Instruction
-* Copy the folder `top-movie-frontend` folder to the same level of `top-movie-api`
+* Copy the folder `top-movie-frontend` to the same level of `top-movie-api`
 * In `top-movie-frontend`   
     * Run `npm install`
     * Run `npm start`
@@ -69,3 +69,7 @@ The requirements are broken down into feature levels. You are only required to c
 ### Coverage
 * MVP
 * Feature 1
+
+### Library and framework used:
+* React
+* BootStrap
