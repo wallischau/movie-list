@@ -9,11 +9,11 @@ class App extends Component {
     return (
       <Router>
       <div overflow='hidden'>
-        <Nav />
         <Switch>        
           <Route exact path="/" component={Movies} />
-          <Route exact path="/:id" component={MovieDetail} />
+          <Route exact path="/detail" component={MovieDetail} />
         </Switch>
+        <Nav />
       </div>
       </Router>
     );

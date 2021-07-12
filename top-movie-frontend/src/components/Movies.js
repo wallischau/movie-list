@@ -22,14 +22,18 @@ class Movies extends Component {
 
   componentDidMount() {
     this.loadMovies();
-  }
-  componentWillMount() {
     document.addEventListener("keydown", this.handlerKeyPress.bind(this));
   }
+  // componentWillMount() {
+    // document.addEventListener("keydown", this.handlerKeyPress.bind(this));
+  // }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handlerKeyPress.bind(this));
-  }
+    // document.removeEventListener("keydown", this.handlerKeyPress.bind(this));
+    this.setState = (state,callback)=>{
+      return;
+  };
+}
 
   /* Description: fetch movies and group them */
   loadMovies = () => {
@@ -95,12 +99,18 @@ class Movies extends Component {
 
   /* Description: errow key handling - hightlight current movies, loop movie around at end of list */
   handlerKeyPress = (e) => {
+    const [ LEFT, UP, RIGHT, DOWN, ENTER ] = [ 37, 38, 39, 40, 13];
     const { cursor, activeListIdx, movieGroups } = this.state;
     const curMovieList = movieGroups[activeListIdx].movieEntries;
-    if (e.keyCode === 37) {     //left arrow key
+    const curGroup = movieGroups[activeListIdx];
+    const curSelectedMovieIdx = (cursor + curGroup.displayRangeIndices[0]) % curGroup.movieEntries.length;
+
+    if (e.keyCode === LEFT) {     //left arrow key
+      const newSelectedMovieIdx = (curSelectedMovieIdx-1) % curMovieList.length;
       if (cursor > 0) {
         this.setState(prevState => ({
-          cursor: prevState.cursor - 1
+          cursor: prevState.cursor - 1,
+          currentMovieId: curGroup.movieEntries[newSelectedMovieIdx].imdbID
         }));
       }
       else {
@@ -109,14 +119,17 @@ class Movies extends Component {
           prevState.movieGroups[activeListIdx].displayRangeIndices[1] = (prevState.movieGroups[activeListIdx].displayRangeIndices[1] - 1 + curMovieList.length) % curMovieList.length;
           return {
             movieGroups: prevState.movieGroups,
+            currentMovieId: curGroup.movieEntries[curSelectedMovieIdx].imdbID
           }
         });
       }
-    } else if (e.keyCode === 39 && cursor < curMovieList.length - 1) { //right arrow key
+    } else if (e.keyCode === RIGHT && cursor < curMovieList.length - 1) { //right arrow key
       //shift right...
+      const newSelectedMovieIdx = (curSelectedMovieIdx+1) % curMovieList.length;
       if (cursor < 3) {
         this.setState(prevState => ({
-          cursor: prevState.cursor + 1
+          cursor: prevState.cursor + 1,
+          currentMovieId: curGroup.movieEntries[newSelectedMovieIdx].imdbID
         }));
       }
       //cursor at edge of display
@@ -126,30 +139,43 @@ class Movies extends Component {
           prevState.movieGroups[activeListIdx].displayRangeIndices[1] = (prevState.movieGroups[activeListIdx].displayRangeIndices[1] + 1) % curMovieList.length;
           return {
             movieGroups: prevState.movieGroups,
+            currentMovieId: curGroup.movieEntries[newSelectedMovieIdx].imdbID
           }
         });
       }
-    } else if (e.keyCode === 38 && activeListIdx > 0) { //up arrow key
+    } else if (e.keyCode === UP && activeListIdx > 0) { //up arrow key
+      const nextGroup = movieGroups[activeListIdx-1];
+      const newSelectedMovieIdx = (cursor + nextGroup.displayRangeIndices[0]) % nextGroup.movieEntries.length;
       this.setState(prevState => ({
-        activeListIdx: prevState.activeListIdx - 1
+        activeListIdx: prevState.activeListIdx - 1,
+        currentMovieId: nextGroup.movieEntries[newSelectedMovieIdx].imdbID
       }));
-    } else if (e.keyCode === 40 && activeListIdx < movieGroups.length - 1) {  //down arrow key
+    } else if (e.keyCode === DOWN && activeListIdx < movieGroups.length - 1) {  //down arrow key
+      console.log('1001 moviegroups', movieGroups);
+      console.log('1002 activelistidx', activeListIdx);
+      const nextGroup = movieGroups[activeListIdx+1];
+      console.log('1003 nextgroup', nextGroup);
+      const newSelectedMovieIdx = (cursor + nextGroup.displayRangeIndices[0]) % nextGroup.movieEntries.length;
+      console.log('1004 newselect', newSelectedMovieIdx);
+      
       this.setState(prevState => ({
-        activeListIdx: prevState.activeListIdx + 1
+        activeListIdx: prevState.activeListIdx + 1,
+        currentMovieId: nextGroup.movieEntries[newSelectedMovieIdx].imdbID
       }));
-    } else if (e.keyCode === 13) {    //enter key
+    } else if (e.keyCode === ENTER) {    //enter key
       //update id
-      const curGroup = movieGroups[activeListIdx];
-      const curSelectedIdx = (cursor + curGroup.displayRangeIndices[0]) % curGroup.movieEntries.length;
+      // const curGroup = movieGroups[activeListIdx];
+      // const curSelectedMovieIdx = (cursor + curGroup.displayRangeIndices[0]) % curGroup.movieEntries.length;
       this.setState({
-        currentMovieId: curGroup.movieEntries[curSelectedIdx].imdbID
+        currentMovieId: curGroup.movieEntries[curSelectedMovieIdx].imdbID
       });
       this.props.history.push({
         pathname: '/detail',
-        search: `?query=${curGroup.movieEntries[curSelectedIdx].imdbID}`,
+        search: `?query=${curGroup.movieEntries[curSelectedMovieIdx].imdbID}`,
         state: this.state
       });
     }
+    console.log('this.state', this.state.currentMovieId);
   };
 
   getTopMoviesByYear = ((movies, year) => {

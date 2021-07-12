@@ -1,30 +1,70 @@
 //Movie detail
 import React, { Component } from "react";
-import "../style/style.css";
+import { Col, Row } from "./Grid";
 
 class MovieDetail extends Component {
 	constructor(props) {
-		console.log('constructor');
 		super(props);
-		this.state = {
-			currentMovie: 'abc',
-			currentMovieId: '123',
-		};
+    this.handlerKeyPress = this.handlerKeyPress.bind(this);
+	} 
 
-		//   this.toggleMenu = this.toggleMenu.bind(this);
-	} //constructor
+  componentDidMount() {
+    document.addEventListener("keydown", this.handlerKeyPress.bind(this));
+  }
 
-
-
+	handlerKeyPress = (e) => {
+		if (e.keyCode === 27) {  //escape key
+			this.props.history.goBack();
+		}
+	}
 
 	render() {
 		const state = this.props.location.state;
-		console.log('601', state);
+		const movieEntries = state.movieGroups[state.activeListIdx].movieEntries;
+		const curMovie = movieEntries.find(mov => mov.imdbID === state.currentMovieId);
+
+    //map attribute descriptions to attribute names in data
+    const attrMatrix = [
+      { label: 'Title', attrKey: 'Title' },
+      { label: 'Genre', attrKey: 'Genre' },
+      { label: 'Year', attrKey: 'Year' },
+      { label: 'Duration in minutes', attrKey: 'Runtime' },
+      { label: 'IMDB Rating', attrKey: 'imdbRating' },
+      { label: 'Age Rating', attrKey: 'Rated' },
+      { label: 'Plot Summary', attrKey: 'Plot' },
+      { label: 'Director', attrKey: 'Director' },
+      { label: 'Production Company', attrKey: 'Production' },
+      { label: 'Stars', attrKey: 'Actors' },
+    ];
+
+    //generate all required attributes of the movie
+		const attrShown = attrMatrix.map(attr => (
+			<Row>
+			  <h4><span className='bold'>{attr.label}:</span> {curMovie[attr.attrKey]}</h4>
+		</Row>
+
+		));
+		const itemShown = (
+				<Row>
+					<Col size='sm-3'>
+						<img src={curMovie.Poster} alt={curMovie.Poster} />
+					</Col>
+					<Col size='sm-4'>
+            { attrShown }
+					</Col>
+				</Row>
+		);
+
 		return (
-			<div>my Details</div>
+			<div className='movie-detail' onKeyDown={this.handlerKeyPress}>
+				<Row>
+          { itemShown }
+				</Row>
+
+			</div>
 		)
 
-	}//render
-}//class detail
+	}
+}
 
 export default MovieDetail;
